@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="002-insert-products-test-data" author="slawek-kordaczuk">
+        <insert tableName="products">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440001"/>
+            <column name="sku" value="TEST-001"/>
+            <column name="name" value="Test Product 1"/>
+            <column name="available_quantity" value="100"/>
+            <column name="reserved_quantity" value="0"/>
+            <column name="active" value="true"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+
+        <insert tableName="products">
+            <column name="id" value="550e8400-e29b-41d4-a716-446655440002"/>
+            <column name="sku" value="TEST-002"/>
+            <column name="name" value="Test Product 2"/>
+            <column name="available_quantity" value="50"/>
+            <column name="reserved_quantity" value="5"/>
+            <column name="active" value="true"/>
+            <column name="created_at" valueDate="now()"/>
+            <column name="updated_at" valueDate="now()"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

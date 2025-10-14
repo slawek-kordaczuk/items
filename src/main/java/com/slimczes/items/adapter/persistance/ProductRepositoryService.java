@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProductRepositoryService implements ProductRepository {
+class ProductRepositoryService implements ProductRepository {
 
     private final JpaProductRepository jpaProductRepository;
     private final ProductEntityMapper productEntityMapper;

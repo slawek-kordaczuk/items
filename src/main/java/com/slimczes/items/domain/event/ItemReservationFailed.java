@@ -11,7 +11,7 @@ public record ItemReservationFailed(
     UUID orderId,
     List<FailedItem> failedItems,
     Instant occurredAt
-) implements DomainEvent {
+) {
 
     public ItemReservationFailed(UUID orderId, List<FailedItem> failedItems, Instant occurredAt) {
         this(UUID.randomUUID(), orderId, failedItems, occurredAt);
@@ -23,19 +23,4 @@ public record ItemReservationFailed(
         int requestedQuantity,
         int availableQuantity
     ) {}
-
-    @Override
-    public UUID getEventId() {
-        return eventId;
-    }
-
-    @Override
-    public Instant getOccurredAt() {
-        return occurredAt;
-    }
-
-    @Override
-    public String getEventType() {
-        return "ItemReservationFailed";
-    }
 }

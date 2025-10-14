@@ -1,4 +1,4 @@
-package com.slimczes.items.service.reservation.mapper;
+package com.slimczes.items.service.reservation;
 
 import com.slimczes.items.domain.event.ItemReservationFailed;
 import com.slimczes.items.domain.event.ItemsReserved;
@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface ReservationProductMapper {
+interface ReservationProductMapper {
 
     @Mapping(target = "itemId", source = "product.id")
     @Mapping(target = "sku", source = "product.sku")

@@ -1,12 +1,9 @@
 package com.slimczes.items.service.product;
 
-import java.util.UUID;
-
-import com.slimczes.items.adapter.api.CreateProductResponse;
+import com.slimczes.items.api.CreateProductResponse;
 import com.slimczes.items.domain.model.Product;
 import com.slimczes.items.domain.port.repository.ProductRepository;
 import com.slimczes.items.service.product.dto.CreateProductDto;
-import com.slimczes.items.service.product.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

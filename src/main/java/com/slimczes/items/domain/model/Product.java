@@ -1,13 +1,10 @@
 package com.slimczes.items.domain.model;
 
+import com.slimczes.items.domain.exception.DomainException;
+
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
-import com.slimczes.items.domain.event.DomainEvent;
-import com.slimczes.items.domain.exception.DomainException;
 
 public class Product {
 
@@ -19,23 +16,21 @@ public class Product {
     private boolean active;
     private final Instant createdAt;
     private Instant updatedAt;
-    private final List<DomainEvent> domainEvents;
 
-    public Product(String sku, String name, int initialQuantity) {
-        this.id = UUID.randomUUID();
+    public Product(String sku, String name, int availableQuantity) {
+        this.id = null;
         this.sku = validateSku(sku);
         this.name = validateName(name);
-        this.availableQuantity = validateQuantity(initialQuantity);
+        this.availableQuantity = validateQuantity(availableQuantity);
         this.reservedQuantity = 0;
         this.active = true;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
-        this.domainEvents = new ArrayList<>();
     }
 
-    public Product(UUID id, String sku, String name,
-                   int availableQuantity, int reservedQuantity, boolean active,
-                   Instant createdAt, Instant updatedAt) {
+    @Default
+    public Product(UUID id, String sku, String name, int availableQuantity,
+            int reservedQuantity, boolean active, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.sku = sku;
         this.name = name;
@@ -44,7 +39,6 @@ public class Product {
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.domainEvents = new ArrayList<>();
     }
 
     public void updateStock(int newQuantity) {
@@ -139,19 +133,6 @@ public class Product {
 
     public int getTotalQuantity() {
         return availableQuantity + reservedQuantity;
-    }
-
-    // Domain event handling
-    public List<DomainEvent> getDomainEvents() {
-        return new ArrayList<>(domainEvents);
-    }
-
-    public void clearDomainEvents() {
-        domainEvents.clear();
-    }
-
-    private void addDomainEvent(DomainEvent event) {
-        domainEvents.add(event);
     }
 
     // Validation methods

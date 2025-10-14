@@ -1,4 +1,4 @@
-package com.slimczes.items.adapter.api;
+package com.slimczes.items.api;
 
 import java.util.UUID;
 

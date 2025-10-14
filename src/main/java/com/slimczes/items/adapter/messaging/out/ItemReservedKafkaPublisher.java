@@ -1,6 +1,5 @@
 package com.slimczes.items.adapter.messaging.out;
 
-import com.slimczes.items.domain.event.DomainEvent;
 import com.slimczes.items.domain.event.ItemReservationFailed;
 import com.slimczes.items.domain.event.ItemsReserved;
 import com.slimczes.items.domain.port.messaging.ItemReservedPublisher;
@@ -13,9 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ItemReservedKafkaPublisher implements ItemReservedPublisher {
+class ItemReservedKafkaPublisher implements ItemReservedPublisher {
 
-    private final KafkaTemplate<String, DomainEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Value("${kafka.topics.reserved}")
     private String itemsReservedTopic;
@@ -26,7 +25,7 @@ public class ItemReservedKafkaPublisher implements ItemReservedPublisher {
     @Override
     public void publishReservedItems(ItemsReserved itemsReserved) {
         log.info("Publishing items reserved event: {}", itemsReserved);
-        kafkaTemplate.send(itemsReservedTopic, itemsReserved.orderId().toString(), itemsReserved)
+        kafkaTemplate.send(itemsReservedTopic, itemsReserved)
                      .whenComplete((result, exception) -> {
                          if (exception != null) {
                              log.error("Error publishing items reserved event: {}", exception.getMessage());
@@ -39,7 +38,7 @@ public class ItemReservedKafkaPublisher implements ItemReservedPublisher {
     @Override
     public void publishReservedItemsFailed(ItemReservationFailed itemReservationFailed) {
         log.info("Publishing items reservation failed event: {}", itemReservationFailed);
-        kafkaTemplate.send(itemsReservedFailedTopic, itemReservationFailed.orderId().toString(), itemReservationFailed)
+        kafkaTemplate.send(itemsReservedFailedTopic, itemReservationFailed)
                      .whenComplete((result, exception) -> {
                          if (exception != null) {
                              log.error("Error publishing items reservation failed event: {}", exception.getMessage());

@@ -16,35 +16,40 @@ import com.slimczes.items.domain.port.repository.ProductRepository;
 import com.slimczes.items.service.reservation.dto.CancelReservationDto;
 import com.slimczes.items.service.reservation.dto.CreateReservationDto;
 import com.slimczes.items.service.reservation.dto.ReservationItemDto;
-import com.slimczes.items.service.reservation.mapper.ReservationProductMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationService {
 
     private final ItemReservedPublisher itemReservedPublisher;
     private final ProductRepository productRepository;
     private final ReservationProductMapper reservationProductMapper;
 
+    @Transactional
     public void createReservation(CreateReservationDto createReservationDto) {
+        log.info("Received reservation event: {}", createReservationDto);
         List<ItemsReserved.ReservedItem> successReservations = new ArrayList<>();
         List<ItemReservationFailed.FailedItem> failedReservation = new ArrayList<>();
         createReservationDto.items().forEach(
-            item -> productRepository.findBySku(item.sku()).ifPresentOrElse(product ->
-                    reserveProduct(item, product, successReservations, failedReservation),
-                () -> failedReservation.add(reservationProductMapper.toFailedItem(item, ReservationStatus.NOT_FOUND))));
+                item -> productRepository.findBySku(item.sku()).ifPresentOrElse(product ->
+                                reserveProduct(item, product, successReservations, failedReservation),
+                        () -> failedReservation.add(reservationProductMapper.toFailedItem(item, ReservationStatus.NOT_FOUND))));
         publishSucceedReservations(createReservationDto.orderId(), successReservations);
         publishFailedReservations(createReservationDto.orderId(), failedReservation);
     }
 
+    @Transactional
     public void cancelReservation(CancelReservationDto cancelReservationDto) {
         cancelReservationDto.items().forEach(item ->
-            productRepository.findBySku(item.sku()).ifPresent(product -> {
-                product.cancelReserveForOrder(item.quantity());
-                productRepository.save(product);
-            }));
+                productRepository.findBySku(item.sku()).ifPresentOrElse(product -> {
+                    product.cancelReserveForOrder(item.quantity());
+                    productRepository.save(product);
+                }, () -> log.error("Product not fount for sku: {}", item.sku())));
     }
 
     private void reserveProduct(ReservationItemDto item, Product product, List<ItemsReserved.ReservedItem> successReservations,
@@ -62,7 +67,6 @@ public class ReservationService {
         if (!successReservations.isEmpty()) {
             ItemsReserved itemsReserved = new ItemsReserved(orderId, successReservations, LocalDateTime.now().toInstant(ZoneOffset.UTC));
             itemReservedPublisher.publishReservedItems(itemsReserved);
-
         }
     }
 
@@ -72,5 +76,4 @@ public class ReservationService {
             itemReservedPublisher.publishReservedItemsFailed(itemReservationFailed);
         }
     }
-
 }

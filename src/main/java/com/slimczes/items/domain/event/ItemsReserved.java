@@ -9,7 +9,7 @@ public record ItemsReserved(
     UUID orderId,
     List<ReservedItem> reservedItems,
     Instant occurredAt
-) implements DomainEvent {
+) {
 
     public ItemsReserved(UUID orderId, List<ReservedItem> reservedItems, Instant occurredAt) {
         this(UUID.randomUUID(), orderId, reservedItems, occurredAt);
@@ -22,20 +22,5 @@ public record ItemsReserved(
         int reservedQuantity
     ) {
 
-    }
-
-    @Override
-    public UUID getEventId() {
-        return eventId;
-    }
-
-    @Override
-    public Instant getOccurredAt() {
-        return occurredAt;
-    }
-
-    @Override
-    public String getEventType() {
-        return "ItemsReserved";
     }
 }
