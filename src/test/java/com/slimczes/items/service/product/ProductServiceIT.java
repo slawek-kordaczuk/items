@@ -1,5 +1,6 @@
 package com.slimczes.items.service.product;
 
+import com.slimczes.items.BaseIntegrationTest;
 import com.slimczes.items.TestcontainersConfiguration;
 import com.slimczes.items.api.CreateProductResponse;
 import com.slimczes.items.domain.model.Product;
@@ -15,10 +16,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Import(TestcontainersConfiguration.class)
 @Transactional
-public class ProductServiceIT {
+public class ProductServiceIT extends BaseIntegrationTest {
 
     @Autowired
     private ProductService productService;

@@ -7,7 +7,6 @@ import com.slimczes.items.service.reservation.dto.CancelReservationDto;
 import com.slimczes.items.service.reservation.dto.CreateReservationDto;
 import com.slimczes.items.service.reservation.dto.ReservationItemDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)

@@ -3,7 +3,8 @@ package com.slimczes.items.adapter.messaging.in;
 import com.slimczes.items.adapter.messaging.event.CancelReservationEvent;
 import com.slimczes.items.adapter.messaging.event.CreateReservationEvent;
 import com.slimczes.items.adapter.messaging.mapper.CreateReservationMapper;
-import com.slimczes.items.service.reservation.ReservationService;
+import com.slimczes.items.service.reservation.CancelReservation;
+import com.slimczes.items.service.reservation.CreateReservation;
 import com.slimczes.items.service.reservation.dto.CancelReservationDto;
 import com.slimczes.items.service.reservation.dto.CreateReservationDto;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ReservationListener {
 
-    private final ReservationService reservationService;
+    private final CreateReservation createReservation;
+    private final CancelReservation cancelReservation;
     private final CreateReservationMapper createReservationMapper;
 
     @KafkaListener(
@@ -27,7 +29,7 @@ public class ReservationListener {
     public void handleItemsToReserve(CreateReservationEvent event) {
         log.info("Received reservation event: {}", event);
         CreateReservationDto createReservationDto = createReservationMapper.toOrderReservationFromEvent(event);
-        reservationService.createReservation(createReservationDto);
+        createReservation.createReservation(createReservationDto);
     }
 
     @KafkaListener(
@@ -38,7 +40,7 @@ public class ReservationListener {
     public void handleItemsToCancelReservation(CancelReservationEvent event) {
         log.info("Received cancel reservation event: {}", event);
         CancelReservationDto cancelReservationDto = createReservationMapper.toCancelOrderReservationFromEvent(event);
-        reservationService.cancelReservation(cancelReservationDto);
+        cancelReservation.cancelReservation(cancelReservationDto);
     }
 
 }

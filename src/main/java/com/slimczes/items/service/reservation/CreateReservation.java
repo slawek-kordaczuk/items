@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ReservationService {
+public class CreateReservation {
 
     private final ItemReservedPublisher itemReservedPublisher;
     private final ProductRepository productRepository;
@@ -32,24 +32,16 @@ public class ReservationService {
 
     @Transactional
     public void createReservation(CreateReservationDto createReservationDto) {
-        log.info("Received reservation event: {}", createReservationDto);
+        log.info("Reservation for orderId: {}", createReservationDto.orderId());
         List<ItemsReserved.ReservedItem> successReservations = new ArrayList<>();
         List<ItemReservationFailed.FailedItem> failedReservation = new ArrayList<>();
         createReservationDto.items().forEach(
-                item -> productRepository.findBySku(item.sku()).ifPresentOrElse(product ->
-                                reserveProduct(item, product, successReservations, failedReservation),
-                        () -> failedReservation.add(reservationProductMapper.toFailedItem(item, ReservationStatus.NOT_FOUND))));
+                item -> productRepository.findBySku(item.sku())
+                        .ifPresentOrElse(product ->
+                                        reserveProduct(item, product, successReservations, failedReservation),
+                                () -> failedReservation.add(reservationProductMapper.toFailedItem(item, ReservationStatus.NOT_FOUND))));
         publishSucceedReservations(createReservationDto.orderId(), successReservations);
         publishFailedReservations(createReservationDto.orderId(), failedReservation);
-    }
-
-    @Transactional
-    public void cancelReservation(CancelReservationDto cancelReservationDto) {
-        cancelReservationDto.items().forEach(item ->
-                productRepository.findBySku(item.sku()).ifPresentOrElse(product -> {
-                    product.cancelReserveForOrder(item.quantity());
-                    productRepository.save(product);
-                }, () -> log.error("Product not fount for sku: {}", item.sku())));
     }
 
     private void reserveProduct(ReservationItemDto item, Product product, List<ItemsReserved.ReservedItem> successReservations,

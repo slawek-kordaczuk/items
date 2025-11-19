@@ -1,11 +1,13 @@
 package com.slimczes.items.domain.model;
 
 import com.slimczes.items.domain.exception.DomainException;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
+@Getter
 public class Product {
 
     private final UUID id;
@@ -41,34 +43,6 @@ public class Product {
         this.updatedAt = updatedAt;
     }
 
-    public void updateStock(int newQuantity) {
-        validateQuantity(newQuantity);
-        this.availableQuantity = newQuantity;
-        this.updatedAt = Instant.now();
-    }
-
-    public void addStock(int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity to add must be positive");
-        }
-        this.availableQuantity += quantity;
-        this.updatedAt = Instant.now();
-    }
-
-    public void removeStock(int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity to remove must be positive");
-        }
-
-        if (this.availableQuantity < quantity) {
-            throw new DomainException("Insufficient stock. Available: " + availableQuantity +
-                ", requested: " + quantity);
-        }
-
-        this.availableQuantity -= quantity;
-        this.updatedAt = Instant.now();
-    }
-
     public ReservationResult reserveForOrder(int quantity) {
         if (quantity <= 0) {
             return ReservationResult.failure(ReservationStatus.INVAlID_QUANTITY);
@@ -95,47 +69,7 @@ public class Product {
         this.updatedAt = Instant.now();
     }
 
-    public void confirmReservationForOrder(int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be positive");
-        }
 
-        if (reservedQuantity < quantity) {
-            throw new DomainException("Cannot confirm more than reserved. Reserved: " + reservedQuantity);
-        }
-
-        this.reservedQuantity -= quantity;
-        this.updatedAt = Instant.now();
-    }
-
-    public void deactivate() {
-        if (reservedQuantity > 0) {
-            throw new DomainException("Cannot deactivate product with pending reservations");
-        }
-
-        this.active = false;
-        this.updatedAt = Instant.now();
-    }
-
-    public void activate() {
-        this.active = true;
-        this.updatedAt = Instant.now();
-    }
-
-    // Query methods
-    public boolean isAvailable() {
-        return active && availableQuantity > 0;
-    }
-
-    public boolean canReserve(int quantity) {
-        return active && availableQuantity >= quantity;
-    }
-
-    public int getTotalQuantity() {
-        return availableQuantity + reservedQuantity;
-    }
-
-    // Validation methods
     private String validateSku(String sku) {
         if (sku == null || sku.trim().isEmpty()) {
             throw new IllegalArgumentException("SKU cannot be null or empty");
@@ -161,39 +95,6 @@ public class Product {
             throw new IllegalArgumentException("Quantity cannot be negative");
         }
         return quantity;
-    }
-
-    // Getters
-    public UUID getId() {
-        return id;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getAvailableQuantity() {
-        return availableQuantity;
-    }
-
-    public int getReservedQuantity() {
-        return reservedQuantity;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
     }
 
     @Override

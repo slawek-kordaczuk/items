@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("product")
+@RequestMapping("/product")
 public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<CreateProductResponse> createProduct(@RequestBody CreateProductDto createProductDto) {
         CreateProductResponse response = productService.createProduct(createProductDto);
         return ResponseEntity.ok(response);
