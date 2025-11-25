@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import com.slimczes.items.domain.event.ItemReservationFailed;
 import com.slimczes.items.domain.event.ItemsReserved;
@@ -40,8 +41,7 @@ public class CreateReservation {
                         .ifPresentOrElse(product ->
                                         reserveProduct(item, product, successReservations, failedReservation),
                                 () -> failedReservation.add(reservationProductMapper.toFailedItem(item, ReservationStatus.NOT_FOUND))));
-        publishSucceedReservations(createReservationDto.orderId(), successReservations);
-        publishFailedReservations(createReservationDto.orderId(), failedReservation);
+        publishReservations(createReservationDto.orderId(), successReservations, failedReservation);
     }
 
     private void reserveProduct(ReservationItemDto item, Product product, List<ItemsReserved.ReservedItem> successReservations,
@@ -53,6 +53,12 @@ public class CreateReservation {
         } else {
             failedReservation.add(reservationProductMapper.toFailedItem(product, item, reservationResult.reservationStatus()));
         }
+    }
+
+    private void publishReservations(UUID orderId, List<ItemsReserved.ReservedItem> successReservations,
+                                     List<ItemReservationFailed.FailedItem> failedReservation) {
+        CompletableFuture.runAsync(() -> publishSucceedReservations(orderId, successReservations));
+        CompletableFuture.runAsync(() -> publishFailedReservations(orderId, failedReservation));
     }
 
     private void publishSucceedReservations(UUID orderId, List<ItemsReserved.ReservedItem> successReservations) {
