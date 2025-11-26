@@ -1,9 +1,10 @@
 package com.slimczes.items.domain.model;
 
-import com.slimczes.items.domain.exception.DomainException;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ public class Product {
     private final UUID id;
     private final String sku;
     private final String name;
+    private List<ProductReservation> reservations;
     private int availableQuantity;
     private int reservedQuantity;
     private boolean active;
@@ -31,11 +33,12 @@ public class Product {
     }
 
     @Default
-    public Product(UUID id, String sku, String name, int availableQuantity,
-            int reservedQuantity, boolean active, Instant createdAt, Instant updatedAt) {
+    public Product(UUID id, String sku, String name, List<ProductReservation> reservations, int availableQuantity,
+                   int reservedQuantity, boolean active, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.sku = sku;
         this.name = name;
+        this.reservations = reservations;
         this.availableQuantity = availableQuantity;
         this.reservedQuantity = reservedQuantity;
         this.active = active;
@@ -45,15 +48,15 @@ public class Product {
 
     public ReservationResult reserveForOrder(int quantity) {
         if (quantity <= 0) {
-            return ReservationResult.failure(ReservationStatus.INVAlID_QUANTITY);
+            return ReservationResult.failure(ProductReservationStatus.INVAlID_QUANTITY);
         }
 
         if (!active) {
-            return ReservationResult.failure(ReservationStatus.NOT_ACTIVE);
+            return ReservationResult.failure(ProductReservationStatus.NOT_ACTIVE);
         }
 
         if (availableQuantity < quantity) {
-            return ReservationResult.failure(ReservationStatus.NOT_AVAILABLE);
+            return ReservationResult.failure(ProductReservationStatus.NOT_AVAILABLE);
         }
 
         this.availableQuantity -= quantity;
@@ -63,12 +66,21 @@ public class Product {
         return ReservationResult.success(quantity);
     }
 
-    public void cancelReserveForOrder(int quantity) {
-        this.availableQuantity += quantity;
-        this.reservedQuantity -= quantity;
-        this.updatedAt = Instant.now();
+    public void cancelReserveForOrder(int quantity, UUID orderId) {
+        List<ProductReservation> reservations = this.reservations.stream()
+                .filter(r -> r.getOrderId().equals(orderId))
+                .toList();
+        reservations.forEach(ProductReservation::cancelReservation);
+        if (!reservations.isEmpty()) {
+            this.availableQuantity += quantity;
+            this.reservedQuantity -= quantity;
+            this.updatedAt = Instant.now();
+        }
     }
 
+    public void addReservation(ProductReservation reservation) {
+        this.reservations.add(reservation);
+    }
 
     private String validateSku(String sku) {
         if (sku == null || sku.trim().isEmpty()) {

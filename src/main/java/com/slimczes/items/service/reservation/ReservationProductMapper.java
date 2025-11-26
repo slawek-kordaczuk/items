@@ -3,7 +3,7 @@ package com.slimczes.items.service.reservation;
 import com.slimczes.items.domain.event.ItemReservationFailed;
 import com.slimczes.items.domain.event.ItemsReserved;
 import com.slimczes.items.domain.model.Product;
-import com.slimczes.items.domain.model.ReservationStatus;
+import com.slimczes.items.domain.model.ProductReservationStatus;
 import com.slimczes.items.service.reservation.dto.ReservationItemDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,12 +22,12 @@ interface ReservationProductMapper {
     @Mapping(target = "reason", source = "reservationStatus")
     @Mapping(target = "requestedQuantity", source = "reservationItemDto.quantity")
     @Mapping(target = "availableQuantity", constant = "0")
-    ItemReservationFailed.FailedItem toFailedItem(ReservationItemDto reservationItemDto, ReservationStatus reservationStatus);
+    ItemReservationFailed.FailedItem toFailedItem(ReservationItemDto reservationItemDto, ProductReservationStatus reservationStatus);
 
     @Mapping(target = "sku", source = "product.sku")
     @Mapping(target = "reason", source = "reservationStatus")
     @Mapping(target = "requestedQuantity", source = "reservationItemDto.quantity")
     @Mapping(target = "availableQuantity", source = "product.availableQuantity")
-    ItemReservationFailed.FailedItem toFailedItem(Product product, ReservationItemDto reservationItemDto, ReservationStatus reservationStatus);
+    ItemReservationFailed.FailedItem toFailedItem(Product product, ReservationItemDto reservationItemDto, ProductReservationStatus reservationStatus);
 
 }

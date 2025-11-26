@@ -19,7 +19,7 @@ public class CancelReservation {
         log.info("Cancel Reservation for orderId: {}", cancelReservationDto.orderId());
         cancelReservationDto.items().forEach(item ->
                 productRepository.findBySku(item.sku()).ifPresentOrElse(product -> {
-                    product.cancelReserveForOrder(item.quantity());
+                    product.cancelReserveForOrder(item.quantity(), cancelReservationDto.orderId());
                     productRepository.save(product);
                 }, () -> log.error("Product not fount for sku: {}", item.sku())));
     }

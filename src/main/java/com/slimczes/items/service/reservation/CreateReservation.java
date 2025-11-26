@@ -10,11 +10,11 @@ import java.util.concurrent.CompletableFuture;
 import com.slimczes.items.domain.event.ItemReservationFailed;
 import com.slimczes.items.domain.event.ItemsReserved;
 import com.slimczes.items.domain.model.Product;
+import com.slimczes.items.domain.model.ProductReservation;
+import com.slimczes.items.domain.model.ProductReservationStatus;
 import com.slimczes.items.domain.model.ReservationResult;
-import com.slimczes.items.domain.model.ReservationStatus;
 import com.slimczes.items.domain.port.messaging.ItemReservedPublisher;
 import com.slimczes.items.domain.port.repository.ProductRepository;
-import com.slimczes.items.service.reservation.dto.CancelReservationDto;
 import com.slimczes.items.service.reservation.dto.CreateReservationDto;
 import com.slimczes.items.service.reservation.dto.ReservationItemDto;
 import lombok.RequiredArgsConstructor;
@@ -34,24 +34,26 @@ public class CreateReservation {
     @Transactional
     public void createReservation(CreateReservationDto createReservationDto) {
         log.info("Reservation for orderId: {}", createReservationDto.orderId());
+        UUID orderId = createReservationDto.orderId();
         List<ItemsReserved.ReservedItem> successReservations = new ArrayList<>();
         List<ItemReservationFailed.FailedItem> failedReservation = new ArrayList<>();
         createReservationDto.items().forEach(
                 item -> productRepository.findBySku(item.sku())
                         .ifPresentOrElse(product ->
-                                        reserveProduct(item, product, successReservations, failedReservation),
-                                () -> failedReservation.add(reservationProductMapper.toFailedItem(item, ReservationStatus.NOT_FOUND))));
-        publishReservations(createReservationDto.orderId(), successReservations, failedReservation);
+                                        reserveProduct(orderId, item, product, successReservations, failedReservation),
+                                () -> failedReservation.add(reservationProductMapper.toFailedItem(item, ProductReservationStatus.NOT_FOUND))));
+        publishReservations(orderId, successReservations, failedReservation);
     }
 
-    private void reserveProduct(ReservationItemDto item, Product product, List<ItemsReserved.ReservedItem> successReservations,
+    private void reserveProduct(UUID orderId, ReservationItemDto item, Product product, List<ItemsReserved.ReservedItem> successReservations,
                                 List<ItemReservationFailed.FailedItem> failedReservation) {
-        ReservationResult reservationResult = product.reserveForOrder(item.quantity());
+        ProductReservation productReservation = new ProductReservation(orderId, item.quantity(), product);
+        ReservationResult reservationResult = productReservation.reserveProduct();
         if (reservationResult.success()) {
             successReservations.add(reservationProductMapper.toReservedItem(product, item));
             productRepository.save(product);
         } else {
-            failedReservation.add(reservationProductMapper.toFailedItem(product, item, reservationResult.reservationStatus()));
+            failedReservation.add(reservationProductMapper.toFailedItem(product, item, reservationResult.productReservationStatus()));
         }
     }
 

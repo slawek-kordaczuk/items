@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import com.slimczes.items.domain.model.ReservationStatus;
+import com.slimczes.items.domain.model.ProductReservationStatus;
 
 public record ItemReservationFailed(
     UUID eventId,
@@ -19,7 +19,7 @@ public record ItemReservationFailed(
 
     public record FailedItem(
         String sku,
-        ReservationStatus reason,
+        ProductReservationStatus reason,
         int requestedQuantity,
         int availableQuantity
     ) {}

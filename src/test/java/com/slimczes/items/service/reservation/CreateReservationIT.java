@@ -4,7 +4,7 @@ import com.slimczes.items.BaseIntegrationTest;
 import com.slimczes.items.domain.event.ItemReservationFailed;
 import com.slimczes.items.domain.event.ItemsReserved;
 import com.slimczes.items.domain.model.Product;
-import com.slimczes.items.domain.model.ReservationStatus;
+import com.slimczes.items.domain.model.ProductReservationStatus;
 import com.slimczes.items.domain.port.repository.ProductRepository;
 import com.slimczes.items.service.reservation.dto.CreateReservationDto;
 import com.slimczes.items.service.reservation.dto.ReservationItemDto;
@@ -98,7 +98,7 @@ public class CreateReservationIT extends BaseIntegrationTest {
             assertThat(event.orderId()).isEqualTo(orderId);
             assertThat(event.failedItems()).hasSize(1);
             assertThat(event.failedItems().getFirst().sku()).isEqualTo("TEST-001");
-            assertThat(event.failedItems().getFirst().reason()).isEqualTo(ReservationStatus.NOT_AVAILABLE);
+            assertThat(event.failedItems().getFirst().reason()).isEqualTo(ProductReservationStatus.NOT_AVAILABLE);
         }
 
         Product updatedProduct = productRepository.findBySku("TEST-001").orElseThrow();

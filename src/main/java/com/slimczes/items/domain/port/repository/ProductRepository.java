@@ -1,12 +1,13 @@
 package com.slimczes.items.domain.port.repository;
 
+import com.slimczes.items.domain.model.Product;
+import com.slimczes.items.domain.model.ProductReservation;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.slimczes.items.domain.model.Product;
-
 public interface ProductRepository {
     Product save(Product product);
-    Optional<Product> findById(UUID id);
     Optional<Product> findBySku(String sku);
 }

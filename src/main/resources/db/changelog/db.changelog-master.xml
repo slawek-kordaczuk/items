@@ -6,6 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <include file="db/changelog/001-create-products-table.xml"/>
-    <include file="db/changelog/002-insert-products-test-data.xml"/>
+    <include file="db/changelog/002-create-product-reservations-table.xml"/>
+    <include file="db/changelog/003-insert-products-test-data.xml"/>
 
 </databaseChangeLog>
