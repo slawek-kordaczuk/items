@@ -3,6 +3,8 @@ package com.slimczes.items.service.reservation;
 import com.slimczes.items.BaseIntegrationTest;
 import com.slimczes.items.domain.event.ItemsReserved;
 import com.slimczes.items.domain.model.Product;
+import com.slimczes.items.domain.model.ProductReservation;
+import com.slimczes.items.domain.model.ProductReservationStatus;
 import com.slimczes.items.domain.port.repository.ProductRepository;
 import com.slimczes.items.service.reservation.dto.CancelReservationDto;
 import com.slimczes.items.service.reservation.dto.CreateReservationDto;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.List;
@@ -26,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = {
         "logging.level.org.apache.kafka=WARN"
 })
-@Transactional
 public class CancelReservationIT extends BaseIntegrationTest {
 
     @Autowired
@@ -71,5 +71,11 @@ public class CancelReservationIT extends BaseIntegrationTest {
         // Then
         Product productAfterCancellation = productRepository.findBySku("TEST-002").orElseThrow();
         assertThat(productAfterCancellation.getAvailableQuantity()).isEqualTo(50);
+        ProductReservation productReservation = productAfterCancellation.getReservations().stream()
+                .filter(reservation -> reservation.getOrderId().equals(orderId))
+                .findFirst()
+                .orElseThrow();
+        assertThat(productReservation.getReservedQuantity()).isEqualTo(20);
+        assertThat(productReservation.getProductReservationStatus()).isEqualTo(ProductReservationStatus.CANCELLED);
     }
 }

@@ -1,14 +1,12 @@
-package com.slimczes.items.adapter.persistance;
+package com.slimczes.items.adapter.persistance.entity;
 
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

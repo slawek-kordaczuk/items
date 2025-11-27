@@ -1,4 +1,4 @@
-package com.slimczes.items.adapter.persistance;
+package com.slimczes.items.adapter.persistance.entity;
 
 import com.slimczes.items.domain.model.ProductReservationStatus;
 import jakarta.persistence.*;

@@ -1,5 +1,7 @@
 package com.slimczes.items.adapter.persistance;
 
+import com.slimczes.items.adapter.persistance.entity.ProductEntity;
+import com.slimczes.items.adapter.persistance.entity.ProductReservationEntity;
 import com.slimczes.items.domain.model.Product;
 import com.slimczes.items.domain.model.ProductReservation;
 import org.mapstruct.*;

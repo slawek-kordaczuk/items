@@ -1,22 +1,18 @@
 package com.slimczes.items.service.product;
 
 import com.slimczes.items.BaseIntegrationTest;
-import com.slimczes.items.TestcontainersConfiguration;
 import com.slimczes.items.api.CreateProductResponse;
 import com.slimczes.items.domain.model.Product;
 import com.slimczes.items.domain.port.repository.ProductRepository;
 import com.slimczes.items.service.product.dto.CreateProductDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
 public class ProductServiceIT extends BaseIntegrationTest {
 
     @Autowired

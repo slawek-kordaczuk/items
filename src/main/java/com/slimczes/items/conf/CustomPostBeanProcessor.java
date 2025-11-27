@@ -8,16 +8,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CustomPostBeanProcessor implements BeanPostProcessor {
 
-
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
-        log.info("Bean {} process before initialization", beanName);
+        log.info("Bean {} process before initialization {}", beanName, bean);
         return bean;
     }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName){
-        log.info("Bean {} process after initialization", beanName);
+        log.info("Bean {} process after initialization {}", beanName, bean);
         return bean;
     }
 

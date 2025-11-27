@@ -4,6 +4,7 @@ import com.slimczes.items.BaseIntegrationTest;
 import com.slimczes.items.domain.event.ItemReservationFailed;
 import com.slimczes.items.domain.event.ItemsReserved;
 import com.slimczes.items.domain.model.Product;
+import com.slimczes.items.domain.model.ProductReservation;
 import com.slimczes.items.domain.model.ProductReservationStatus;
 import com.slimczes.items.domain.port.repository.ProductRepository;
 import com.slimczes.items.service.reservation.dto.CreateReservationDto;
@@ -71,6 +72,12 @@ public class CreateReservationIT extends BaseIntegrationTest {
         // And then
         Product updatedProduct = productRepository.findBySku("TEST-001").orElseThrow();
         assertThat(updatedProduct.getAvailableQuantity()).isEqualTo(90);
+        ProductReservation productReservation = updatedProduct.getReservations().stream()
+                .filter(reservation -> reservation.getOrderId().equals(orderId))
+                .findFirst()
+                .orElseThrow();
+        assertThat(productReservation.getReservedQuantity()).isEqualTo(10);
+        assertThat(productReservation.getProductReservationStatus()).isEqualTo(ProductReservationStatus.RESERVED);
     }
 
     @Test
@@ -103,6 +110,13 @@ public class CreateReservationIT extends BaseIntegrationTest {
 
         Product updatedProduct = productRepository.findBySku("TEST-001").orElseThrow();
         assertThat(updatedProduct.getAvailableQuantity()).isEqualTo(100);
+        ProductReservation productReservation = updatedProduct.getReservations().stream()
+                .filter(reservation -> reservation.getOrderId().equals(orderId))
+                .findFirst()
+                .orElseThrow();
+        assertThat(productReservation.getReservedQuantity()).isEqualTo(110);
+        assertThat(productReservation.getProductReservationStatus()).isEqualTo(ProductReservationStatus.NOT_AVAILABLE);
+
     }
 
 }
